@@ -82,3 +82,4 @@ node_modules/
 flask_profiler.sql
 
 poetry.lock
+conf/
