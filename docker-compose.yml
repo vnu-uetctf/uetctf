@@ -1,12 +1,10 @@
-version: '2'
+version: '3.8'
 
 services:
   ctfd:
     build: .
     user: root
     restart: always
-    ports:
-      - "8000:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
@@ -19,12 +17,15 @@ services:
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - .:/opt/CTFd:ro
+      - .:/opt/CTFd
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - db
+      - frpc
     networks:
-        default:
-        internal:
+      internal:
+      frp_connect:
+        ipv4_address: 172.1.0.5
 
   nginx:
     image: nginx:stable
@@ -35,6 +36,9 @@ services:
       - 80:80
     depends_on:
       - ctfd
+    networks:
+      default:
+      internal:
 
   db:
     image: mariadb:10.4.12
@@ -47,19 +51,75 @@ services:
     volumes:
       - .data/mysql:/var/lib/mysql
     networks:
-        internal:
-    # This command is required to set important mariadb defaults
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+      internal: # This command is required to set important mariadb defaults
+    command:
+      [
+        mysqld,
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_unicode_ci,
+        --wait_timeout=28800,
+        --log-warnings=0
+      ]
 
   cache:
     image: redis:4
     restart: always
     volumes:
-    - .data/redis:/data
+      - .data/redis:/data
     networks:
-        internal:
+      internal:
+
+
+  frps:
+    image: snowdreamtech/frps
+    restart: always
+    volumes:
+      - ./conf/frp:/conf
+    entrypoint:
+      - frps
+      - -c
+      - /conf/frps.ini
+    ports:
+      - 10000-10100:10000-10100
+    networks:
+      default:
+      frp_connect:
+        ipv4_address: 172.1.0.3
+
+  frpc:
+    image: snowdreamtech/frpc
+    restart: always
+    volumes:
+      - ./conf/frp:/conf/
+    entrypoint:
+      - frpc
+      - -c
+      - /conf/frpc.ini
+    depends_on:
+      - frps
+    networks:
+      internal:
+      frp_containers:
+      frp_connect:
+        ipv4_address: 172.1.0.4
 
 networks:
-    default:
-    internal:
-        internal: true
+  default:
+  internal:
+    internal: true
+  frp_connect:
+    driver: overlay
+    internal: true
+    attachable: true
+    ipam:
+      config:
+        - subnet: 172.1.0.0/16
+  frp_containers:
+    # challenge containers are attached to this network
+    driver: overlay
+    internal: true
+    # if challenge containers are allowed to access the internet, remove this line
+    attachable: true
+    ipam:
+      config:
+        - subnet: 172.2.0.0/16
