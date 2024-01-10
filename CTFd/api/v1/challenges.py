@@ -249,6 +249,16 @@ class ChallengeList(Resource):
 
         return {"success": True, "data": response}
 
+@challenges_namespace.route("/categories")
+class ChallengeCategories(Resource):
+    @admins_only
+    def get(self):
+        categories = set()
+        challs = get_all_challenges()
+        for chall in challs:
+            categories.add(chall.category)
+        
+        return {"success": True, "data": sorted(list(categories), reverse=True)}
 
 @challenges_namespace.route("/types")
 class ChallengeTypes(Resource):
@@ -811,3 +821,13 @@ class ChallengeRequirements(Resource):
     def get(self, challenge_id):
         challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
         return {"success": True, "data": challenge.requirements}
+
+@challenges_namespace.route("/categories")
+class ChallengeCategories(Resource):
+    def get(self):
+        categories = set()
+        challs = get_all_challenges()
+        for chall in challs:
+            categories.add(chall.category)
+        
+        return {"success": True, "data": list(categories)}
