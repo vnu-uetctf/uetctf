@@ -25,22 +25,10 @@ services:
       - db
       - frpc
     networks:
+      default:
       internal:
       frp_connect:
         ipv4_address: 172.1.0.5
-
-  nginx:
-    image: nginx:stable
-    restart: always
-    volumes:
-      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-    depends_on:
-      - ctfd
-    networks:
-      default:
-      internal:
 
   db:
     image: mariadb:10.4.12
@@ -82,7 +70,7 @@ services:
       - -c
       - /conf/frps.ini
     ports:
-      - 10000-10100:10000-10100
+      - 10000-10500:10000-10500
     networks:
       default:
       frp_connect:
