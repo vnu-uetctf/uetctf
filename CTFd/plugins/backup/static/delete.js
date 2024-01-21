@@ -1,14 +1,3 @@
-function language(en,zh) {
-    const cookies = document.cookie.split('; ');
-    for (const cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.split('=');
-        if (cookieName === "Scr1wCTFdLanguage") {
-            return (decodeURIComponent(cookieValue) === "en" ? en : zh);
-        }
-    }
-    return zh;
-}
-
 function htmlentities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -19,8 +8,8 @@ $(".delete-backup").click(function (e) {
 
 
     CTFd.ui.ezq.ezQuery({
-        title: language("Delete Backup","删除备份"),
-        body: language(`Are you sure you want to delete ${filename}?`,`你确定要删除${filename}的备份吗？`),
+        title: "Delete Backup",
+        body: `Are you sure you want to delete ${filename}?`,
         success: async function () {
             let response = await CTFd.fetch(`/plugins/backup/admin/delete?name=${filename}`, {
                 method: "GET"
@@ -30,8 +19,8 @@ $(".delete-backup").click(function (e) {
                 window.location.reload()
             }else{
                 CTFd.ui.ezq.ezToast({
-                    title: language("Error!",'出现错误！'),
-                    body: language("Delete Backup Failed!",'备份文件删除失败！')
+                    title: "Error!",
+                    body: "Delete Backup Failed!"
                 });
             }
         }
@@ -48,8 +37,8 @@ $(".backup-now").click(async function (e) {
         window.location.reload()
     } else {
         CTFd.ui.ezq.ezToast({
-            title: language("Error!", '出现错误！'),
-            body: language("Backup Failed!", '备份文件失败！')
+            title: "Error!",
+            body: "Backup Failed!",
         });
     }
 });

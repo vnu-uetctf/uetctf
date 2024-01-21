@@ -158,6 +158,7 @@ def run_upgrade():
 
 def create_app(config="CTFd.config.Config"):
     app = CTFdFlask(__name__)
+    app.config['SESSION_COOKIE_NAME'] = 'UETCTFCookieSessionID'
     with app.app_context():
         app.config.from_object(config)
 

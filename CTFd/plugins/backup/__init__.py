@@ -74,7 +74,6 @@ def load(app):
                               path="/plugins/backup/admin")
 
     def format_size(size):
-        # Convert bytes to human-readable format
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size < 1024.0:
                 break
@@ -88,7 +87,7 @@ def load(app):
         if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
             interval = get_config("backup:interval")
             time = get_config("backup:time")
-            print("[Auto Backup] 自动备份配置已更新，正在重设计划任务！", flush=True)
+            print("[Auto Backup] Configuration updated, tasks rescheduled.", flush=True)
             update_schedule(interval, time)
 
         upload_folder = os.path.join(
@@ -119,18 +118,14 @@ def load(app):
         os.makedirs(auto_backups_folder, exist_ok=True)
 
         backup_name = request.args.get("name")
-        # 构造备份文件的完整路径
         backup_path = os.path.join(auto_backups_folder, backup_name)
 
-        # 检查文件是否存在
         if os.path.exists(backup_path):
-            # 使用send_file发送文件
             return send_file(
                 backup_path,
                 as_attachment=True
             )
         else:
-            # 文件不存在，可以返回404或其他适当的响应
             return "File not found", 404
 
     @page_blueprint.route("/admin/delete")
@@ -143,23 +138,19 @@ def load(app):
         os.makedirs(auto_backups_folder, exist_ok=True)
 
         backup_name = request.args.get("name")
-        # 构造备份文件的完整路径
         backup_path = os.path.join(auto_backups_folder, backup_name)
-
-        # 检查文件是否存在
         if os.path.exists(backup_path):
             os.remove(backup_path)
             return {
                 'success': True,
-                'message': '删除成功！'
+                'message': 'Deleted!'
             }, 200
         else:
             return {
                 'success': False,
-                'message': '文件不存在！'
+                'message': 'File not found!'
             }, 200
 
-    # 初始化日志
     log_dir = app.config.get('LOG_FOLDER', os.path.join(os.path.dirname(__file__), 'logs'))
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -212,37 +203,30 @@ def load(app):
         return backup
 
     def delete_oldest_file(folder_path):
-        # 获取文件夹内所有文件
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
 
-        # 如果文件数大于8个，进行删除操作
         if len(files) > get_config("backup:max"):
-            # 按文件的修改时间进行排序
             files = sorted(files, key=lambda x: os.path.getmtime(os.path.join(folder_path, x)))
 
-            # 删除最旧的文件
             file_to_delete = os.path.join(folder_path, files[0])
             os.remove(file_to_delete)
-            print(f"[Auto Backup] 删除了最旧的备份文件：{file_to_delete}", flush=True)
+            print(f"[Auto Backup] Oldest backup deleted! {file_to_delete}", flush=True)
 
     def write_backup():
         backup_file = custom_export_ctf()
 
-        # 如果不存在则创建目录
         upload_folder = os.path.join(
             os.path.normpath(app.root_path), app.config.get("UPLOAD_FOLDER")
         )
         auto_backups_folder = os.path.join(upload_folder, "autoBackups")
         os.makedirs(auto_backups_folder, exist_ok=True)
 
-        # 写入备份文件
         name = ctf_name()
         day = current_backend_time().strftime("%Y-%m-%d_%T")
         full_name = os.path.join(auto_backups_folder, f"{name}.{day}.zip")
         with open(full_name, "wb") as target:
             shutil.copyfileobj(backup_file, target)
-        print(f"[Auto Backup] 备份完成：{name}.{day}.zip", flush=True)
-        # 删除旧备份
+        print(f"[Auto Backup] Backup: {name}.{day}.zip", flush=True)
         delete_oldest_file(auto_backups_folder)
 
     @page_blueprint.route("/admin/backupNow")
@@ -251,7 +235,7 @@ def load(app):
         write_backup()
         return {
             'success': True,
-            'message': '备份完成！'
+            'message': 'Backup Completed!'
         }, 200
 
     def single_task(task, t):
@@ -281,9 +265,9 @@ def load(app):
         with app.app_context():
             if get_config("backup:enabled"):
                 write_backup()
-                print("[Auto Backup] 自动备份完成！", flush=True)
+                print("[Auto Backup] Automatic backup successful!", flush=True)
             else:
-                print("[Auto Backup] 自动备份未启用。", flush=True)
+                print("[Auto Backup] Automatic backup error!", flush=True)
 
     def check():
         global interval, time
@@ -291,7 +275,7 @@ def load(app):
             if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
                 interval = get_config("backup:interval")
                 time = get_config("backup:time")
-                print("[Auto Backup] 自动备份配置已更新，正在重设计划任务！", flush=True)
+                print("[Auto Backup] Configuration updated, tasks rescheduled.", flush=True)
                 update_schedule(interval, time)
             schedule.run_pending()
 
@@ -299,8 +283,8 @@ def load(app):
         schedule.clear()
         schedule.every(it).days.at(convert_hours_to_time_string(t),
                                    pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
-        print("[Auto Backup] 计划任务重设完成！", flush=True)
-        print(f'[Auto Backup] 计划任务内容{schedule.get_jobs()}', flush=True)
+        print("[Auto Backup] Schedule updated!", flush=True)
+        print(f'[Auto Backup] Tasks incoming: {schedule.get_jobs()}', flush=True)
 
     scheduler = APScheduler()
     scheduler.init_app(app)
@@ -312,6 +296,6 @@ def load(app):
 
     schedule.every(interval).days.at(convert_hours_to_time_string(time),
                                      pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
-    print(f'[Auto Backup] 计划任务内容{schedule.get_jobs()}', flush=True)
+    print(f'[Auto Backup] Task incoming: {schedule.get_jobs()}', flush=True)
 
     app.register_blueprint(page_blueprint)
