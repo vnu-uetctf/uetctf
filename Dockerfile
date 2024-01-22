@@ -2,10 +2,9 @@ FROM python:3.11-slim-buster as build
 
 WORKDIR /opt/CTFd
 
-RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list
-
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list \
+    apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         libffi-dev \
@@ -24,10 +23,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.11-slim-buster as release
 WORKDIR /opt/CTFd
 
-RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list
-
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list \
+    apt-get update \
     && apt-get install -y --no-install-recommends \
         libffi6 \
         libssl1.1 \
