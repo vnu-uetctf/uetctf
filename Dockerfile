@@ -2,6 +2,8 @@ FROM python:3.11-slim-buster as build
 
 WORKDIR /opt/CTFd
 
+RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list
+
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -21,6 +23,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.11-slim-buster as release
 WORKDIR /opt/CTFd
+
+RUN sed -i "s@http://deb.debian.org@https://mirrors.xtom.com@g" /etc/apt/sources.list
 
 # hadolint ignore=DL3008
 RUN apt-get update \
