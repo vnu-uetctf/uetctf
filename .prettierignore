@@ -10,7 +10,7 @@ CTFd/themes/core-beta/**/*
 *.mp3
 *.webm
 .pytest_cache
-**/venv*
-**/.venv*
-**/node_modules*
-**/.data*
+.venv*
+venv*
+node_modules*
+.data*
