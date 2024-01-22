@@ -2356,7 +2356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^3.3.0, chokidar@npm:^3.4.1":
+"chokidar@npm:^3.4.1":
   version: 3.4.2
   resolution: "chokidar@npm:3.4.2"
   dependencies:
@@ -3072,7 +3072,7 @@ __metadata:
     jquery: "npm:~3.5.1"
     markdown-it: "npm:~10.0.0"
     mini-css-extract-plugin: "npm:~0.7.0"
-    nunjucks: "npm:~3.2.0"
+    nunjucks: "npm:~3.2.4"
     optimize-css-assets-webpack-plugin: "npm:~5.0.1"
     popper.js: "npm:^1.15.0"
     prettier: "npm:1.17.0"
@@ -6139,20 +6139,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nunjucks@npm:~3.2.0":
-  version: 3.2.2
-  resolution: "nunjucks@npm:3.2.2"
+"nunjucks@npm:~3.2.4":
+  version: 3.2.4
+  resolution: "nunjucks@npm:3.2.4"
   dependencies:
     a-sync-waterfall: "npm:^1.0.0"
     asap: "npm:^2.0.3"
-    chokidar: "npm:^3.3.0"
     commander: "npm:^5.1.0"
-  dependenciesMeta:
+  peerDependencies:
+    chokidar: ^3.3.0
+  peerDependenciesMeta:
     chokidar:
       optional: true
   bin:
     nunjucks-precompile: bin/precompile
-  checksum: efb9e3b9a884a70d2fa7ab1ee9a9f638ae23c94edc6d9cee9e70577c38fd6108ab9bbfacc8cf6ebb7990fc5bec039c723cef85df160a81cf921cafb20cfd27a6
+  checksum: 7fe5197559b7c09972c79e2a86f9c093459b9075bc9b41134cd2bc599ae93567b53bd09d472a748edc736192d9ccd2998aa8c20cfcbe6a3fffd281f91897c888
   languageName: node
   linkType: hard
 
