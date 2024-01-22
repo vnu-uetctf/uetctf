@@ -2,15 +2,13 @@ lint:
 	ruff check --select E,F,W,B,C4,I --ignore E402,E501,E712,B904,B905,I001 --exclude=CTFd/uploads CTFd/ migrations/ tests/
 	isort --profile=black --check-only --skip=CTFd/uploads -rc CTFd/ tests/
 	yarn lint
-	black --check --diff --exclude=CTFd/uploads --exclude=node_modules .
-	prettier --check 'CTFd/themes/**/assets/**/*'
-	prettier --check '**/*.md'
+	black --check --diff .
+	yarn prettier --check "CTFd/themes/**/assets/js/**/*"
 
 format:
 	isort --profile=black --skip=CTFd/uploads -rc CTFd/ tests/
-	black --exclude=CTFd/uploads --exclude=node_modules .
-	prettier --write 'CTFd/themes/**/assets/**/*'
-	prettier --write '**/*.md'
+	black .
+	yarn prettier --write "CTFd/themes/**/assets/js/**/*"
 
 test:
 	pytest -rf --cov=CTFd --cov-context=test --cov-report=xml \

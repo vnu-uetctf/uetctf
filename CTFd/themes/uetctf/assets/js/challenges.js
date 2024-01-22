@@ -20,8 +20,8 @@ window.Alpine = Alpine;
 
 Alpine.store("challenge", {
   data: {
-    view: "",
-  },
+    view: ""
+  }
 });
 
 Alpine.data("Hint", () => ({
@@ -52,7 +52,7 @@ Alpine.data("Hint", () => ({
         }
       }
     }
-  },
+  }
 }));
 
 Alpine.data("Challenge", () => ({
@@ -69,7 +69,7 @@ Alpine.data("Challenge", () => ({
 
   getStyles() {
     let styles = {
-      "modal-dialog": true,
+      "modal-dialog": true
     };
     try {
       let size = CTFd.config.themeSettings.challenge_window_size;
@@ -150,7 +150,7 @@ Alpine.data("Challenge", () => ({
 
     // Dispatch load-challenges event to call loadChallenges in the ChallengeBoard
     this.$dispatch("load-challenges", this.current_page);
-  },
+  }
 }));
 
 Alpine.data("ChallengeBoard", () => ({
@@ -229,7 +229,7 @@ Alpine.data("ChallengeBoard", () => ({
     this.loaded = false;
     this.challenges = await CTFd.pages.challenges.getChallenges({
       q: search,
-      field: "category",
+      field: "category"
     });
     for (let chall of this.challenges) {
       if (chall.category === search)
@@ -261,7 +261,7 @@ Alpine.data("ChallengeBoard", () => ({
         history.replaceState(null, null, `#${challenge.data.name}-${challengeId}`);
       });
     });
-  },
+  }
 }));
 
 Alpine.data("PageBoard", () => ({
@@ -284,7 +284,7 @@ Alpine.data("PageBoard", () => ({
     if (this.current_page === null && this.pages.length != 0) {
       this.selectPage(this.pages[0]);
     }
-  },
+  }
 }));
 
 Alpine.start();

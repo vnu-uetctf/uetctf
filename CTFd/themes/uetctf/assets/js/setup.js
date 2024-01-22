@@ -13,7 +13,10 @@ Alpine.data("SetupForm", () => ({
       i.addEventListener("keypress", e => {
         if (e.key == "Enter") {
           e.preventDefault();
-          e.target.closest(".tab-pane").querySelector("button[data-href]").click();
+          e.target
+            .closest(".tab-pane")
+            .querySelector("button[data-href]")
+            .click();
         }
       });
       i.addEventListener("change", e => {
@@ -26,11 +29,13 @@ Alpine.data("SetupForm", () => ({
     });
 
     // Register storage listener for MLC integration
-    window.addEventListener("storage", function (event) {
+    window.addEventListener("storage", function(event) {
       if (event.key == "integrations" && event.newValue) {
         let integration = JSON.parse(event.newValue);
         if (integration["name"] == "mlc") {
-          $("#integration-mlc").text("Already Configured").attr("disabled", true);
+          $("#integration-mlc")
+            .text("Already Configured")
+            .attr("disabled", true);
           window.focus();
           localStorage.removeItem("integrations");
         }
@@ -42,9 +47,8 @@ Alpine.data("SetupForm", () => ({
     if (e.target.files[0].size > limit) {
       if (
         !confirm(
-          `This image file is larger than ${
-            limit / 1000
-          }KB which may result in increased load times. Are you sure you'd like to use this file?`
+          `This image file is larger than ${limit /
+            1000}KB which may result in increased load times. Are you sure you'd like to use this file?`
         )
       ) {
         e.target.value = "";
@@ -85,7 +89,7 @@ Alpine.data("SetupForm", () => ({
   },
 
   processDateTime(datetime) {
-    return function (_event) {
+    return function(_event) {
       let date_picker = document.querySelector(`#${datetime}-date`);
       let time_picker = document.querySelector(`#${datetime}-time`);
       let unix_time = dayjs(
@@ -114,7 +118,7 @@ Alpine.data("SetupForm", () => ({
       start: document.querySelector("#start-preview").value,
       end: document.querySelector("#end-preview").value,
       platform: "CTFd",
-      state: window.STATE,
+      state: window.STATE
     };
 
     const ret = [];
@@ -133,7 +137,7 @@ Alpine.data("SetupForm", () => ({
       let params = {
         email: email,
         b_38e27f7d496889133d2214208_d7c3ed71f9: "",
-        c: "jsonp_callback_" + Math.round(10000 * Math.random()),
+        c: "jsonp_callback_" + Math.round(10000 * Math.random())
       };
       const ret = [];
       for (let p in params) {
@@ -146,7 +150,7 @@ Alpine.data("SetupForm", () => ({
         ret.join("&");
       document.head.appendChild(script);
     }
-  },
+  }
 }));
 
 Alpine.start();

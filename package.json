@@ -68,5 +68,6 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }

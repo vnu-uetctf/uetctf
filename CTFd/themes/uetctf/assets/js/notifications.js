@@ -25,7 +25,7 @@ CTFd.fetch(`/api/v1/notifications?since_id=${lastId}`)
     // Broadcast our new count (which should be 0)
     let count = CTFd.events.counter.unread.getAll().length;
     CTFd.events.controller.broadcast("counter", {
-      count: count,
+      count: count
     });
     Alpine.store("unread_count", count);
   });

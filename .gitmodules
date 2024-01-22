@@ -1,3 +1,0 @@
-[submodule "CTFd/plugins/ctfd-whale"]
-	path = CTFd/plugins/ctfd-whale
-	url = https://github.com/dnx04/ctfd-whale.git

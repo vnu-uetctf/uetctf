@@ -2,22 +2,22 @@ export function getOption(solves, fails) {
   let option = {
     title: {
       left: "center",
-      text: "Solve Percentages",
+      text: "Solve Percentages"
     },
     tooltip: {
-      trigger: "item",
+      trigger: "item"
     },
     toolbox: {
       show: true,
       feature: {
-        saveAsImage: {},
-      },
+        saveAsImage: {}
+      }
     },
     legend: {
       orient: "vertical",
       top: "middle",
       right: 0,
-      data: ["Fails", "Solves"],
+      data: ["Fails", "Solves"]
     },
     series: [
       {
@@ -27,19 +27,19 @@ export function getOption(solves, fails) {
         avoidLabelOverlap: false,
         label: {
           show: false,
-          position: "center",
+          position: "center"
         },
         itemStyle: {
           normal: {
             label: {
               show: true,
-              formatter: function (data) {
+              formatter: function(data) {
                 return `${data.name} - ${data.value} (${data.percent}%)`;
-              },
+              }
             },
             labelLine: {
-              show: true,
-            },
+              show: true
+            }
           },
           emphasis: {
             label: {
@@ -47,35 +47,35 @@ export function getOption(solves, fails) {
               position: "center",
               textStyle: {
                 fontSize: "14",
-                fontWeight: "normal",
-              },
-            },
-          },
+                fontWeight: "normal"
+              }
+            }
+          }
         },
         emphasis: {
           label: {
             show: true,
             fontSize: "30",
-            fontWeight: "bold",
-          },
+            fontWeight: "bold"
+          }
         },
         labelLine: {
-          show: false,
+          show: false
         },
         data: [
           {
             value: fails,
             name: "Fails",
-            itemStyle: { color: "rgb(207, 38, 0)" },
+            itemStyle: { color: "rgb(207, 38, 0)" }
           },
           {
             value: solves,
             name: "Solves",
-            itemStyle: { color: "rgb(0, 209, 64)" },
-          },
-        ],
-      },
-    ],
+            itemStyle: { color: "rgb(0, 209, 64)" }
+          }
+        ]
+      }
+    ]
   };
   return option;
 }

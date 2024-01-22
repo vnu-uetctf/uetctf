@@ -54,7 +54,7 @@ Alpine.data("TeamEditModal", () => ({
         this.errors.push(error_msg);
       });
     }
-  },
+  }
 }));
 
 Alpine.data("TeamCaptainModal", () => ({
@@ -76,13 +76,13 @@ Alpine.data("TeamCaptainModal", () => ({
         this.errors.push(error_msg);
       });
     }
-  },
+  }
 }));
 
 Alpine.data("TeamInviteModal", () => ({
   copy() {
     copyToClipboard(this.$refs.link);
-  },
+  }
 }));
 
 Alpine.data("TeamDisbandModal", () => ({
@@ -96,7 +96,7 @@ Alpine.data("TeamDisbandModal", () => ({
     } else {
       this.errors = response.errors[""];
     }
-  },
+  }
 }));
 
 Alpine.data("CaptainMenu", () => ({
@@ -117,7 +117,9 @@ Alpine.data("CaptainMenu", () => ({
 
     if (response.success) {
       const code = response.data.code;
-      const url = `${window.location.origin}${CTFd.config.urlRoot}/teams/invite?code=${code}`;
+      const url = `${window.location.origin}${
+        CTFd.config.urlRoot
+      }/teams/invite?code=${code}`;
 
       document.querySelector("#team-invite-modal input[name=link]").value = url;
       this.$store.inviteToken = url;
@@ -129,7 +131,7 @@ Alpine.data("CaptainMenu", () => ({
   disbandTeam() {
     this.teamDisbandModal = new Modal(document.getElementById("team-disband-modal"));
     this.teamDisbandModal.show();
-  },
+  }
 }));
 
 Alpine.data("TeamGraphs", () => ({
@@ -170,7 +172,7 @@ Alpine.data("TeamGraphs", () => ({
         name: property,
         count: breakdown[property],
         percent: (breakdown[property] / categories.length) * 100,
-        color: colorHash(property),
+        color: colorHash(property)
       });
     }
 
@@ -195,7 +197,7 @@ Alpine.data("TeamGraphs", () => ({
         this.awards.data
       )
     );
-  },
+  }
 }));
 
 Alpine.start();

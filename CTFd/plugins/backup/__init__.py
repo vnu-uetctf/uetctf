@@ -1,49 +1,48 @@
 import json
-import shutil
-import sys
 import logging
 import os
+import shutil
+import sys
 import tempfile
 import zipfile
 from datetime import datetime
 from functools import wraps
 from io import BytesIO
-import schedule
-import pytz
 
 import dataset
+import pytz
+import schedule
+from flask import Blueprint, render_template, request, send_file
 from flask_apscheduler import APScheduler
 from flask_restx import Namespace
 
 from CTFd.plugins import (
-    register_plugin_assets_directory,
     register_admin_plugin_menu_bar,
+    register_plugin_assets_directory,
 )
-from CTFd.utils import get_config, set_config, get_app_config, current_backend_time
-from flask import request, render_template, Blueprint, send_file
+from CTFd.utils import current_backend_time, get_app_config, get_config, set_config
 
 from ...api import CTFd_API_v1
 from ...cache import cache
 from ...utils.config import ctf_name
 from ...utils.decorators import admins_only
 from ...utils.exports import freeze_export
-from ...utils.logging import log
 from ...utils.migrations import get_current_revision
 from ...utils.uploads import get_uploader
 
-logger = logging.getLogger('backup')
+logger = logging.getLogger("backup")
 
 
 def config(app):
     if not get_config("backup:setup"):
         for key, val in {
-            'enabled': 'false',
-            'interval': '7',
-            'time': '3',
-            'max': '8',
-            'setup': 'true'
+            "enabled": "false",
+            "interval": "7",
+            "time": "3",
+            "max": "8",
+            "setup": "true",
         }.items():
-            set_config('backup:' + key, val)
+            set_config("backup:" + key, val)
 
 
 interval = 7
@@ -52,7 +51,7 @@ time = 3
 
 def load(app):
     config(app)
-    plugin_name = __name__.split('.')[-1]
+    plugin_name = __name__.split(".")[-1]
 
     global interval, time
     interval = get_config("backup:interval")
@@ -61,30 +60,36 @@ def load(app):
     register_plugin_assets_directory(
         app,
         base_path=f"/plugins/{plugin_name}/assets",
-        endpoint='plugins.backup.assets')
-    register_admin_plugin_menu_bar(title='Backup',
-                                   route='/plugins/backup/admin/settings')
+        endpoint="plugins.backup.assets",
+    )
+    register_admin_plugin_menu_bar(
+        title="Backup", route="/plugins/backup/admin/settings"
+    )
 
-    page_blueprint = Blueprint("backup",
-                               __name__,
-                               template_folder="templates",
-                               static_folder="static",
-                               url_prefix="/plugins/backup")
-    CTFd_API_v1.add_namespace(Namespace("backup-admin"),
-                              path="/plugins/backup/admin")
+    page_blueprint = Blueprint(
+        "backup",
+        __name__,
+        template_folder="templates",
+        static_folder="static",
+        url_prefix="/plugins/backup",
+    )
+    CTFd_API_v1.add_namespace(Namespace("backup-admin"), path="/plugins/backup/admin")
 
     def format_size(size):
-        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        for unit in ["B", "KB", "MB", "GB", "TB"]:
             if size < 1024.0:
-                break
+                return "{:.2f} {}".format(size, unit)
             size /= 1024.0
         return "{:.2f} {}".format(size, unit)
 
-    @page_blueprint.route('/admin/settings')
+    @page_blueprint.route("/admin/settings")
     @admins_only
     def admin_list_configs():
         global interval, time
-        if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
+        if (
+            get_config("backup:interval") is not interval
+            or get_config("backup:time") is not time
+        ):
             interval = get_config("backup:interval")
             time = get_config("backup:time")
             print("[Auto Backup] Configuration updated, tasks rescheduled.", flush=True)
@@ -96,17 +101,19 @@ def load(app):
         auto_backups_folder = os.path.join(upload_folder, "autoBackups")
         os.makedirs(auto_backups_folder, exist_ok=True)
         backup_files = []
-        for root, dirs, files in os.walk(auto_backups_folder):
+        for root, _dirs, files in os.walk(auto_backups_folder):
             for file in files:
                 file_path = os.path.join(root, file)
                 file_size = os.path.getsize(file_path)
                 file_date = os.path.getctime(file_path)
-                backup_files.append({
-                    'name': file,
-                    'size': format_size(file_size),
-                    'date': datetime.utcfromtimestamp(file_date)
-                })
-        return render_template('backup_config.html', backup_files=backup_files)
+                backup_files.append(
+                    {
+                        "name": file,
+                        "size": format_size(file_size),
+                        "date": datetime.utcfromtimestamp(file_date),
+                    }
+                )
+        return render_template("backup_config.html", backup_files=backup_files)
 
     @page_blueprint.route("/admin/download")
     @admins_only
@@ -121,10 +128,7 @@ def load(app):
         backup_path = os.path.join(auto_backups_folder, backup_name)
 
         if os.path.exists(backup_path):
-            return send_file(
-                backup_path,
-                as_attachment=True
-            )
+            return send_file(backup_path, as_attachment=True)
         else:
             return "File not found", 404
 
@@ -141,24 +145,20 @@ def load(app):
         backup_path = os.path.join(auto_backups_folder, backup_name)
         if os.path.exists(backup_path):
             os.remove(backup_path)
-            return {
-                'success': True,
-                'message': 'Deleted!'
-            }, 200
+            return {"success": True, "message": "Deleted!"}, 200
         else:
-            return {
-                'success': False,
-                'message': 'File not found!'
-            }, 200
+            return {"success": False, "message": "File not found!"}, 200
 
-    log_dir = app.config.get('LOG_FOLDER', os.path.join(os.path.dirname(__file__), 'logs'))
+    log_dir = app.config.get(
+        "LOG_FOLDER", os.path.join(os.path.dirname(__file__), "logs")
+    )
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    log_file = os.path.join(log_dir, 'backup.log')
+    log_file = os.path.join(log_dir, "backup.log")
 
     if not os.path.exists(log_file):
-        open(log_file, 'a').close()
+        open(log_file, "a").close()
     logger.addHandler(logging.handlers.RotatingFileHandler(log_file, maxBytes=10000))
     logger.addHandler(logging.StreamHandler(stream=sys.stdout))
     logger.propagate = 0
@@ -192,7 +192,7 @@ def load(app):
         for root, _dirs, files in os.walk(upload_folder):
             for file in files:
                 parent_dir = os.path.basename(root)
-                if not "autoBackups" in parent_dir:
+                if "autoBackups" not in parent_dir:
                     backup_zip.write(
                         os.path.join(root, file),
                         arcname=os.path.join("uploads", parent_dir, file),
@@ -203,10 +203,16 @@ def load(app):
         return backup
 
     def delete_oldest_file(folder_path):
-        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        files = [
+            f
+            for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))
+        ]
 
         if len(files) > get_config("backup:max"):
-            files = sorted(files, key=lambda x: os.path.getmtime(os.path.join(folder_path, x)))
+            files = sorted(
+                files, key=lambda x: os.path.getmtime(os.path.join(folder_path, x))
+            )
 
             file_to_delete = os.path.join(folder_path, files[0])
             os.remove(file_to_delete)
@@ -233,10 +239,7 @@ def load(app):
     @admins_only
     def admin_backup_now():
         write_backup()
-        return {
-            'success': True,
-            'message': 'Backup Completed!'
-        }, 200
+        return {"success": True, "message": "Backup Completed!"}, 200
 
     def single_task(task, t):
         def wrap(func):
@@ -272,30 +275,39 @@ def load(app):
     def check():
         global interval, time
         with app.app_context():
-            if get_config("backup:interval") is not interval or get_config("backup:time") is not time:
+            if (
+                get_config("backup:interval") is not interval
+                or get_config("backup:time") is not time
+            ):
                 interval = get_config("backup:interval")
                 time = get_config("backup:time")
-                print("[Auto Backup] Configuration updated, tasks rescheduled.", flush=True)
+                print(
+                    "[Auto Backup] Configuration updated, tasks rescheduled.",
+                    flush=True,
+                )
                 update_schedule(interval, time)
             schedule.run_pending()
 
     def update_schedule(it, t):
         schedule.clear()
-        schedule.every(it).days.at(convert_hours_to_time_string(t),
-                                   pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
+        schedule.every(it).days.at(
+            convert_hours_to_time_string(t),
+            pytz.timezone(get_config("backend_timezone", "Asia/Shanghai")),
+        ).do(backup)
         print("[Auto Backup] Schedule updated!", flush=True)
-        print(f'[Auto Backup] Tasks incoming: {schedule.get_jobs()}', flush=True)
+        print(f"[Auto Backup] Tasks incoming: {schedule.get_jobs()}", flush=True)
 
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
-    scheduler.add_job(id='auto-backup-check',
-                      func=check,
-                      trigger="interval",
-                      seconds=10)
+    scheduler.add_job(
+        id="auto-backup-check", func=check, trigger="interval", seconds=10
+    )
 
-    schedule.every(interval).days.at(convert_hours_to_time_string(time),
-                                     pytz.timezone(get_config("backend_timezone", "Asia/Shanghai"))).do(backup)
-    print(f'[Auto Backup] Task incoming: {schedule.get_jobs()}', flush=True)
+    schedule.every(interval).days.at(
+        convert_hours_to_time_string(time),
+        pytz.timezone(get_config("backend_timezone", "Asia/Shanghai")),
+    ).do(backup)
+    print(f"[Auto Backup] Task incoming: {schedule.get_jobs()}", flush=True)
 
     app.register_blueprint(page_blueprint)

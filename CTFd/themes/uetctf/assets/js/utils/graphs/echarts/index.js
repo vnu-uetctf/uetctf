@@ -8,7 +8,7 @@ import {
   TransformComponent,
   LegendComponent,
   ToolboxComponent,
-  DataZoomComponent,
+  DataZoomComponent
 } from "echarts/components";
 // Features like Universal Transition and Label Layout
 import { LabelLayout, UniversalTransition } from "echarts/features";
@@ -29,7 +29,7 @@ echarts.use([
   DataZoomComponent,
   LabelLayout,
   UniversalTransition,
-  CanvasRenderer,
+  CanvasRenderer
 ]);
 
 export function embed(target, option) {

@@ -1,9 +1,9 @@
+import datetime
 import json
 from enum import Enum
 
 import cmarkgfm
 import pytz
-import datetime
 from cmarkgfm.cmark import Options
 from flask import current_app as app
 
@@ -15,16 +15,17 @@ string_types = (str,)
 text_type = str
 binary_type = bytes
 
+
 def current_backend_time():
     timezone = get_config("backend_timezone")
     if timezone is None:
-        timezone = 'Asia/Ho_Chi_Minh'
+        timezone = "Asia/Ho_Chi_Minh"
     try:
         desired_timezone = pytz.timezone(timezone)
         current_time = datetime.datetime.now(tz=desired_timezone)
         return current_time
     except Exception:
-        desired_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
+        desired_timezone = pytz.timezone("Asia/Ho_Chi_Minh")
         current_time = datetime.datetime.now(tz=desired_timezone)
         return current_time
 

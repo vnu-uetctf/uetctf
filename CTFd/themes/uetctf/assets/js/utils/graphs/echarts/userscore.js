@@ -6,40 +6,40 @@ export function getOption(id, name, solves, awards) {
   let option = {
     title: {
       left: "center",
-      text: "Score over Time",
+      text: "Score over Time"
     },
     tooltip: {
       trigger: "axis",
       axisPointer: {
-        type: "cross",
-      },
+        type: "cross"
+      }
     },
     legend: {
       type: "scroll",
       orient: "horizontal",
       align: "left",
       bottom: 0,
-      data: [name],
+      data: [name]
     },
     toolbox: {
       feature: {
-        saveAsImage: {},
-      },
+        saveAsImage: {}
+      }
     },
     grid: {
-      containLabel: true,
+      containLabel: true
     },
     xAxis: [
       {
         type: "category",
         boundaryGap: false,
-        data: [],
-      },
+        data: []
+      }
     ],
     yAxis: [
       {
-        type: "value",
-      },
+        type: "value"
+      }
     ],
     dataZoom: [
       {
@@ -49,10 +49,10 @@ export function getOption(id, name, solves, awards) {
         filterMode: "filter",
         height: 20,
         top: 35,
-        fillerColor: "rgba(233, 236, 241, 0.4)",
-      },
+        fillerColor: "rgba(233, 236, 241, 0.4)"
+      }
     ],
-    series: [],
+    series: []
   };
 
   const times = [];
@@ -83,20 +83,20 @@ export function getOption(id, name, solves, awards) {
     label: {
       normal: {
         show: true,
-        position: "top",
-      },
+        position: "top"
+      }
     },
     areaStyle: {
       normal: {
-        color: colorHash(name + id),
-      },
+        color: colorHash(name + id)
+      }
     },
     itemStyle: {
       normal: {
-        color: colorHash(name + id),
-      },
+        color: colorHash(name + id)
+      }
     },
-    data: cumulativeSum(scores),
+    data: cumulativeSum(scores)
   });
   return option;
 }

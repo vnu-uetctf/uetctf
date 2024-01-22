@@ -269,6 +269,7 @@ class ChallengeTypes(Resource):
             }
         return {"success": True, "data": response}
 
+
 @challenges_namespace.route("/categories")
 class ChallengeCategories(Resource):
     def get(self):
@@ -277,7 +278,9 @@ class ChallengeCategories(Resource):
         categories = set()
         for chall in challs:
             categories.add(chall.category)
-        return {"success": True, "data": sorted(list(categories), reverse=True)}
+        categories = list(categories)
+        return {"success": True, "data": sorted(categories, reverse=True)}
+
 
 @challenges_namespace.route("/<challenge_id>")
 class Challenge(Resource):

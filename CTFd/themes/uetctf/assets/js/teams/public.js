@@ -45,7 +45,7 @@ Alpine.data("TeamGraphs", () => ({
         name: property,
         count: breakdown[property],
         percent: ((breakdown[property] / categories.length) * 100).toFixed(2),
-        color: colorHash(property),
+        color: colorHash(property)
       });
     }
 
@@ -70,7 +70,7 @@ Alpine.data("TeamGraphs", () => ({
         this.awards.data
       )
     );
-  },
+  }
 }));
 
 Alpine.start();

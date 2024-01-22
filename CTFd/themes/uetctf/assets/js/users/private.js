@@ -48,7 +48,7 @@ Alpine.data("UserGraphs", () => ({
         name: property,
         count: breakdown[property],
         color: colorHash(property),
-        percent,
+        percent
       });
     }
 
@@ -73,7 +73,7 @@ Alpine.data("UserGraphs", () => ({
         this.awards.data
       )
     );
-  },
+  }
 }));
 
 Alpine.start();

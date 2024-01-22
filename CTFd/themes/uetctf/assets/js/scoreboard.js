@@ -14,7 +14,7 @@ Alpine.data("ScoreboardDetail", () => ({
 
     let option = getOption(CTFd.config.userMode, this.data);
     embed(this.$refs.scoregraph, option);
-  },
+  }
 }));
 
 Alpine.start();

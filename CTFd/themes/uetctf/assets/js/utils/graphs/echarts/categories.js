@@ -4,23 +4,23 @@ export function getOption(solves) {
   let option = {
     title: {
       left: "center",
-      text: "Category Breakdown",
+      text: "Category Breakdown"
     },
     tooltip: {
-      trigger: "item",
+      trigger: "item"
     },
     toolbox: {
       show: true,
       feature: {
-        saveAsImage: {},
-      },
+        saveAsImage: {}
+      }
     },
     legend: {
       type: "scroll",
       orient: "vertical",
       top: "middle",
       right: 0,
-      data: [],
+      data: []
     },
     series: [
       {
@@ -30,19 +30,19 @@ export function getOption(solves) {
         avoidLabelOverlap: false,
         label: {
           show: false,
-          position: "center",
+          position: "center"
         },
         itemStyle: {
           normal: {
             label: {
               show: true,
-              formatter: function (data) {
+              formatter: function(data) {
                 return `${data.percent}% (${data.value})`;
-              },
+              }
             },
             labelLine: {
-              show: true,
-            },
+              show: true
+            }
           },
           emphasis: {
             label: {
@@ -50,24 +50,24 @@ export function getOption(solves) {
               position: "center",
               textStyle: {
                 fontSize: "14",
-                fontWeight: "normal",
-              },
-            },
-          },
+                fontWeight: "normal"
+              }
+            }
+          }
         },
         emphasis: {
           label: {
             show: true,
             fontSize: "30",
-            fontWeight: "bold",
-          },
+            fontWeight: "bold"
+          }
         },
         labelLine: {
-          show: false,
+          show: false
         },
-        data: [],
-      },
-    ],
+        data: []
+      }
+    ]
   };
   const categories = [];
 
@@ -95,7 +95,7 @@ export function getOption(solves) {
     option.series[0].data.push({
       value: counts[index],
       name: category,
-      itemStyle: { color: colorHash(category) },
+      itemStyle: { color: colorHash(category) }
     });
   });
 
